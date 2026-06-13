@@ -144,6 +144,12 @@ Additional inventory controls and equipment organization tools for more advanced
 
 Character Forge includes a complete backup system that allows players to export and restore character data quickly and efficiently.
 
+## Live Demo
+
+🌐 Access Character Forge online:
+
+https://character-forge.github.io/character-forge/
+
 ### Example Character Backup
 
 An example backup file is included with the project:
