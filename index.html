@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Character Forge — D&D 5e</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="tooltip-global"></div>
+<div class="sheet">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="site-title" data-i18n="siteTitle">Character Forge</div>
+    <div class="site-sub" data-i18n="siteSub">Criador de Fichas · D&amp;D 5ª Edição</div>
+    <div class="divider"></div>
+    <div class="name-preview empty" id="name-preview" data-i18n-empty="nameEmpty">Seu personagem ainda não tem nome...</div>
+    <div class="class-badge" id="class-badge"></div>
+  </div>
+
+  <!-- PROGRESS STEPS — Heurística Nielsen #1: Visibilidade do estado do sistema -->
+  <div class="progress-steps" id="progress-steps">
+    <div class="progress-step">
+      <div class="progress-step-dot ativo" id="step-dot-1"><span>1</span></div>
+      <div class="progress-step-label ativo" id="step-label-1" data-i18n="step1">Identidade</div>
+    </div>
+    <div class="progress-connector" id="conn-1"></div>
+    <div class="progress-step">
+      <div class="progress-step-dot" id="step-dot-2"><span>2</span></div>
+      <div class="progress-step-label" id="step-label-2" data-i18n="step2">Atributos</div>
+    </div>
+    <div class="progress-connector" id="conn-2"></div>
+    <div class="progress-step">
+      <div class="progress-step-dot" id="step-dot-3"><span>3</span></div>
+      <div class="progress-step-label" id="step-label-3" data-i18n="step3">Perícias</div>
+    </div>
+    <div class="progress-connector" id="conn-3"></div>
+    <div class="progress-step">
+      <div class="progress-step-dot" id="step-dot-4"><span>4</span></div>
+      <div class="progress-step-label" id="step-label-4">Magias</div>
+    </div>
+    <div class="progress-connector" id="conn-4"></div>
+    <div class="progress-step">
+      <div class="progress-step-dot" id="step-dot-5"><span>5</span></div>
+      <div class="progress-step-label" id="step-label-5" data-i18n="step4">Equipamento</div>
+    </div>
+  </div>
+
+  <!-- IDENTIDADE -->
+  <div class="card">
+    <div class="card-title" data-i18n="sec1Title">Identidade do Personagem</div>
+
+    <!-- Avatar + campos principais -->
+    <div class="avatar-section" style="margin-bottom:18px">
+      <div>
+        <label style="cursor:pointer" for="avatar-input">
+          <div class="avatar-box" id="avatar-box">
+            <div class="avatar-placeholder" id="avatar-placeholder">
+              <div class="avatar-placeholder-icon">🎭</div>
+              <div class="avatar-placeholder-text" data-i18n="avatarText">Clique para<br>adicionar arte</div>
+            </div>
+          </div>
+        </label>
+        <input type="file" id="avatar-input" accept="image/*" style="display:none">
+      </div>
+      <div class="avatar-fields">
+        <div class="field">
+          <span class="field-label" data-i18n="lblCharName">Nome do Personagem</span>
+          <input type="text" id="char-name" placeholder="Ex: Arathos, Sylvara, Zorn..." autocomplete="off" oninput="updateNamePreview()" data-i18n-ph="phCharName">
+        </div>
+        <div class="field">
+          <span class="field-label" data-i18n="lblPlayerName">Nome do Jogador</span>
+          <input type="text" id="player-name" placeholder="Seu nome" autocomplete="off" data-i18n-ph="phPlayerName">
+        </div>
+        <div class="field">
+          <div class="field-label-row">
+            <span class="field-label" data-i18n="lblLevel">Nível</span>
+            <span class="help-icon">?<span class="tooltip" data-i18n="tipLevel">Personagens começam no Nível 1 e sobem até o 20 conforme acumulam experiência em aventuras.</span></span>
+          </div>
+          <select id="char-level" onchange="onLevelChange()">
+            <option value="">— Escolha —</option>
+            <option value="1" selected>1</option><option value="2">2</option><option value="3">3</option>
+            <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+            <option value="7">7</option><option value="8">8</option><option value="9">9</option>
+            <option value="10">10</option><option value="11">11</option><option value="12">12</option>
+            <option value="13">13</option><option value="14">14</option><option value="15">15</option>
+            <option value="16">16</option><option value="17">17</option><option value="18">18</option>
+            <option value="19">19</option><option value="20">20</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Classe + Raça + Antecedente -->
+    <div class="grid-3" style="margin-bottom:16px">
+      <div class="field">
+        <div class="field-label-row">
+          <span class="field-label" data-i18n="lblClass">Classe</span>
+          <span class="help-icon">?<span class="tooltip" data-i18n="tipClass">A classe define o papel do seu personagem: guerreiro, mago, ladino, curandeiro... É a escolha mais importante na criação.</span></span>
+        </div>
+        <select id="char-class" onchange="onClassChange()">
+          <option value="" data-i18n="optChoose">— Escolha —</option>
+          <option value="artifice">Artífice</option>
+          <option value="barbaro">Bárbaro</option>
+          <option value="bardo">Bardo</option>
+          <option value="bruxo">Bruxo</option>
+          <option value="clerigo">Clérigo</option>
+          <option value="druida">Druida</option>
+          <option value="feiticeiro">Feiticeiro</option>
+          <option value="guerreiro">Guerreiro</option>
+          <option value="ladino">Ladino</option>
+          <option value="mago">Mago</option>
+          <option value="monge">Monge</option>
+          <option value="paladino">Paladino</option>
+          <option value="patrulheiro">Patrulheiro</option>
+        </select>
+      </div>
+      <div class="field">
+        <div class="field-label-row">
+          <span class="field-label" data-i18n="lblRace">Raça</span>
+          <span class="help-icon">?<span class="tooltip" data-i18n="tipRace">Define traços físicos e habilidades inatas do personagem — como visão no escuro de elfos ou resistência a veneno de anões.</span></span>
+        </div>
+        <select id="char-race" onchange="onRaceChange()">
+          <option value="" data-i18n="optChoose">— Escolha —</option>
+          <optgroup label="Livro do Jogador" data-i18n-label="optGroupPHB">
+            <option value="anao">Anão</option>
+            <option value="elfo">Elfo</option>
+            <option value="halfling">Halfling</option>
+            <option value="humano">Humano</option>
+            <option value="draconato">Draconato</option>
+            <option value="gnomo">Gnomo</option>
+            <option value="meio-elfo">Meio-Elfo</option>
+            <option value="meio-orc">Meio-Orc</option>
+            <option value="tiefling">Tiefling</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="field">
+        <div class="field-label-row">
+          <span class="field-label" data-i18n="lblBackground">Antecedente</span>
+          <span class="help-icon">?<span class="tooltip" data-i18n="tipBackground">De onde seu personagem veio antes de se tornar aventureiro. Concede proficiências, idiomas e equipamentos iniciais.</span></span>
+        </div>
+        <select id="char-background" onchange="onBackgroundChange()">
+          <option value="" data-i18n="optChoose">— Escolha —</option>
+          <option value="acolito">Acólito</option>
+          <option value="artesao">Artesão de Guilda</option>
+          <option value="charlatan">Charlatão</option>
+          <option value="criminoso">Criminoso</option>
+          <option value="eremita">Eremita</option>
+          <option value="entretenedor">Entretenedor</option>
+          <option value="forasteiro">Forasteiro</option>
+          <option value="heroi">Herói do Povo</option>
+          <option value="marinheiro">Marinheiro</option>
+          <option value="nobre">Nobre</option>
+          <option value="sabio">Sábio</option>
+          <option value="soldado">Soldado</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Subclasse -->
+    <div class="field" id="subclass-field" style="display:none; margin-bottom:16px">
+      <div class="field-label-row">
+        <span class="field-label" data-i18n="lblSubclass">Especialização / Subclasse</span>
+        <span class="help-icon">?<span class="tooltip" data-i18n="tipSubclass">Cada classe tem caminhos especializados com habilidades únicas. Alguns são escolhidos no Nível 1, outros no Nível 3.</span></span>
+      </div>
+      <select id="char-subclass" onchange="onSubclassChange()"><option value="" data-i18n="optChooseSpec">— Escolha sua especialização —</option></select>
+    </div>
+
+    <!-- Sub-raça (aparece condicionalmente para Anão, Elfo, Halfling, Gnomo) -->
+    <div class="field" id="subrace-field" style="display:none; margin-bottom:16px">
+      <div class="field-label-row">
+        <span class="field-label" data-i18n="lblSubrace">Sub-raça</span>
+        <span class="help-icon">?<span class="tooltip" data-i18n="tipSubrace">Cada raça possui variações com traços e bônus distintos. Escolha a que melhor representa seu personagem.</span></span>
+      </div>
+      <select id="char-subrace" onchange="onSubraceChange()">
+        <option value="" data-i18n="optChooseSubrace">— Escolha sua sub-raça —</option>
+      </select>
+    </div>
+
+    <!-- Ancestral Dracônico (Draconato — cosmético, sem efeito mecânico) -->
+    <div class="field" id="draconic-field" style="display:none; margin-bottom:16px">
+      <div class="field-label-row">
+        <span class="field-label" data-i18n="lblDraconicAncestry">Ancestral Dracônico</span>
+        <span class="help-icon">?<span class="tooltip" data-i18n="tipDraconicAncestry">Define o tipo de dano do seu sopro e sua resistência. Escolha cosmética — não altera atributos.</span></span>
+      </div>
+      <select id="char-draconic" onchange="onDraconicChange()">
+        <option value="" data-i18n="optChooseDraconic">— Escolha seu ancestral —</option>
+      </select>
+    </div>
+
+    <!-- Alinhamento + Divindade -->
+    <div class="grid-2" style="margin-bottom:16px">
+      <div class="field">
+        <div class="field-label-row">
+          <span class="field-label" data-i18n="lblAlignment">Alinhamento</span>
+          <span class="help-icon">?<span class="tooltip" data-i18n="tipAlignment">Descreve a postura moral do personagem: bem/mal e ordem/caos. É uma bússola ética, não uma prisão.</span></span>
+        </div>
+        <div class="alignment-grid">
+          <button class="align-btn" onclick="selectAlignment(this,'Leal e Bom')" data-i18n="algLG">Leal<br>e Bom</button>
+          <button class="align-btn" onclick="selectAlignment(this,'Neutro e Bom')" data-i18n="algNG">Neutro<br>e Bom</button>
+          <button class="align-btn" onclick="selectAlignment(this,'Caótico e Bom')" data-i18n="algCG">Caótico<br>e Bom</button>
+          <button class="align-btn" onclick="selectAlignment(this,'Leal e Neutro')" data-i18n="algLN">Leal<br>e Neutro</button>
+          <button class="align-btn" onclick="selectAlignment(this,'Neutro')" data-i18n="algTN">Neutro<br>Puro</button>
+          <button class="align-btn" onclick="selectAlignment(this,'Caótico e Neutro')" data-i18n="algCN">Caótico<br>e Neutro</button>
+          <button class="align-btn" onclick="selectAlignment(this,'Leal e Mau')" data-i18n="algLE">Leal<br>e Mau</button>
+          <button class="align-btn" onclick="selectAlignment(this,'Neutro e Mau')" data-i18n="algNE">Neutro<br>e Mau</button>
+          <button class="align-btn" onclick="selectAlignment(this,'Caótico e Mau')" data-i18n="algCE">Caótico<br>e Mau</button>
+        </div>
+      </div>
+
+      <div>
+        <!-- DIVINDADE — dinâmica -->
+        <div class="field deity-section" id="deity-section">
+          <div class="field-label-row">
+            <span class="field-label" id="deity-label" data-i18n="lblDeity">Divindade (opcional)</span>
+            <span class="help-icon">?<span class="tooltip" id="deity-tooltip" data-i18n="tipDeity">Personagens religiosos veneram algum deus. Muito importante para Clérigos e Paladinos, mas qualquer um pode ter uma fé.</span></span>
+          </div>
+          <!-- modo: select de divindades (classes/raças com lista) -->
+          <div id="deity-select-wrap" style="display:none">
+            <select id="deity-select" onchange="onDeitySelectChange()">
+              <option value="" data-i18n="optChooseDeity">— Escolha uma divindade —</option>
+            </select>
+          </div>
+          <!-- modo: input livre (padrão) -->
+          <div id="deity-free-wrap">
+            <input type="text" id="deity-free" placeholder="Ex: Bahamut, Avandra, Lolth..." autocomplete="off" data-i18n-ph="phDeity">
+          </div>
+        </div>
+
+        <!-- Idade / Altura / Peso -->
+        <div style="margin-top:14px">
+          <div class="field-label" style="margin-bottom:8px" data-i18n="lblAgeHeightWeight">Idade · Altura · Peso</div>
+          <div class="grid-3">
+            <input class="bare" type="text" id="char-age" placeholder="Idade" autocomplete="off" data-i18n-ph="phAge">
+            <input class="bare" type="text" id="char-height" placeholder="Altura" autocomplete="off" data-i18n-ph="phHeight">
+            <input class="bare" type="text" id="char-weight" placeholder="Peso" autocomplete="off" data-i18n-ph="phWeight">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Aparência -->
+    <div class="field">
+      <span class="field-label" data-i18n="lblAppearance">Aparência física</span>
+      <input type="text" id="char-appearance" placeholder="Olhos dourados, cabelo prateado, chifres curvos, pele azulada..." autocomplete="off" data-i18n-ph="phAppearance">
+    </div>
+  </div>
+
+  <button class="btn-continuar" id="btn-continuar" onclick="continuar()" data-i18n="btnContinueAttrs">✦ &nbsp; Continuar para Atributos &nbsp; ✦</button>
+
+  <!-- ══════════════════════════════════════
+       SEÇÃO 2 — ATRIBUTOS (oculta até continuar)
+       ══════════════════════════════════════ -->
+  <div id="sec-atributos" style="display:none; opacity:0; transform:translateY(18px); transition: opacity 0.55s ease, transform 0.55s ease;">
+
+    <!-- Separador de seção -->
+    <div class="section-sep" style="margin: 24px 0 20px;" data-i18n="sep2">Distribuição de Atributos</div>
+
+    <!-- CARD: método Point Buy -->
+    <div class="card" id="card-pointbuy" style="margin-bottom:16px">
+      <div class="card-title" data-i18n="pbTitle">Compra de Pontos <span id="pb-label-badge" style="margin-left:auto; font-family:'Cinzel',serif; font-size:9px; letter-spacing:1.5px; color:var(--text-dim);" data-i18n="pbBadge">POINT BUY — PHB p.13</span></div>
+
+      <!-- Pontos restantes -->
+      <div id="pb-pontos-wrap" style="display:flex; align-items:center; gap:12px; margin-bottom:18px; padding:10px 14px; border:1px solid var(--border); background:rgba(0,0,0,0.25);">
+        <div style="font-family:'Cinzel',serif; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--text-dim);" data-i18n="pbRemaining">Pontos Restantes</div>
+        <div id="pb-pontos" style="font-family:'Cinzel Decorative',serif; font-size:28px; color:var(--gold); line-height:1; transition:color 0.3s;">27</div>
+        <div style="flex:1"></div>
+        <div style="font-family:'Cinzel',serif; font-size:9px; color:var(--text-dim); text-align:right; line-height:1.6;" data-i18n="pbHint">
+          Valor 8–15 antes dos bônus raciais<br>
+          <span style="color:var(--accent); font-size:8px;">9→+1 · 10→+1 · 11→+1 · 12→+1 · 13→+1 · 14→+2 · 15→+2</span>
+        </div>
+      </div>
+
+      <!-- Grid de atributos -->
+      <div class="attrs-grid" id="attrs-grid">
+        <!-- gerado por JS -->
+      </div>
+
+      <!-- Nota racial -->
+      <div class="attr-racial-note" id="attr-racial-note" style="display:none; margin-top:12px; font-size:11px; color:var(--text-dim); font-style:italic; padding:8px 10px; border:1px dashed rgba(255,255,255,0.08); line-height:1.6;"></div>
+    </div>
+
+    <!-- COMBATE: HP, CA, etc -->
+    <div class="grid-2" style="margin-bottom:16px;">
+
+      <div class="card" id="card-atributos-resumo">
+        <div class="card-title" data-i18n="attrsTitle">Atributos Finais</div>
+        <div class="attrs" id="attrs-final-grid">
+          <!-- gerado por JS -->
+        </div>
+        <!-- Salvaguardas — preenche o espaço e é a próxima informação mais útil -->
+        <div class="sv-wrap" id="sv-wrap">
+          <div class="sv-title">
+            <span class="sv-title-line"></span>
+            <span class="sv-title-text" data-i18n="svTitle">Salvaguardas</span>
+            <span class="sv-title-line"></span>
+          </div>
+          <div class="sv-grid" id="sv-grid"><!-- gerado por JS --></div>
+        </div>
+      </div>
+
+      <div class="card" id="card-combate">
+        <div class="card-title" data-i18n="combatTitle">Combate &amp; Derivados</div>
+        <div class="hp-box" id="hp-box">
+          <div>
+            <div class="hp-label" data-i18n="hpLabel">Pontos de Vida</div>
+            <div class="hp-number" id="hp-valor">—</div>
+            <div class="hp-label" id="hp-formula" data-i18n="hpFormula">escolha classe</div>
+          </div>
+        </div>
+        <div style="height:10px"></div>
+        <div class="stat-row"><span class="stat-label" data-i18n="lblCA">Classe de Armadura</span><span class="stat-value big" id="comb-ca">—</span></div>
+        <div class="stat-row"><span class="stat-label" data-i18n="lblInit">Iniciativa</span><span class="stat-value" id="comb-init">—</span></div>
+        <div class="stat-row"><span class="stat-label" data-i18n="lblSpeed">Deslocamento</span><span class="stat-value" id="comb-desl">—</span></div>
+        <div class="stat-row"><span class="stat-label" data-i18n="lblProfBonus">Bônus de Proficiência</span><span class="stat-value" id="comb-prof">+2</span></div>
+        <div class="stat-row" id="row-cd-magia" style="display:none"><span class="stat-label" data-i18n="lblSpellDC">CD de Magia</span><span class="stat-value" id="comb-cd">—</span></div>
+      </div>
+    </div>
+
+    <button class="btn-continuar" id="btn-continuar-2" onclick="continuarPericias()" style="margin-bottom:0;" data-i18n="btnContinueSkills">✦ &nbsp; Continuar para Perícias &nbsp; ✦</button>
+
+  </div>
+
+  <div class="footer" id="footer-main" data-i18n="footer">Forjador de Heróis · D&D 5e · Livro do Jogador &amp; Caldeirão de Tasha</div>
+
+</div>
+
+<!-- ══════════════════════════════════════
+     SEÇÃO 3 — PERÍCIAS (oculta até continuar)
+     ══════════════════════════════════════ -->
+<div id="sec-pericias" style="display:none; opacity:0; transform:translateY(18px); transition: opacity 0.55s ease, transform 0.55s ease; max-width:860px; margin:0 auto; padding: 0 16px 48px;">
+
+  <div class="section-sep" style="margin: 24px 0 20px;" data-i18n="sep3">Proficiências em Perícias</div>
+
+  <div class="card">
+    <div class="card-title" data-i18n="skillsTitle">Perícias</div>
+
+    <!-- Cabeçalho informativo: contador + regra rápida -->
+    <div class="pericias-header">
+
+      <!-- Contador de seleções -->
+      <div class="pericias-pontos-panel" id="pericias-pontos-panel">
+        <div class="pericias-pontos-topo">
+          <div class="pericias-pontos-numero" id="pericias-restantes">0</div>
+          <div class="pericias-pontos-label">
+            <span data-i18n="skillsRemaining">perícias<br>restantes</span><br>
+            <span id="pericias-total-label" style="color:var(--accent); font-size:8px;">de 0</span>
+          </div>
+        </div>
+        <div class="pericias-pontos-barra">
+          <div class="pericias-pontos-fill" id="pericias-fill" style="width:0%"></div>
+        </div>
+      </div>
+
+      <!-- Regra rápida contextual -->
+      <div class="pericias-regra-panel" id="pericias-regra-panel">
+        <strong data-i18n="skillsHowTitle">Como funciona</strong>
+        <span data-i18n="skillsHowText">Escolha as perícias marcadas como disponíveis para sua classe. Perícias do seu <em>antecedente</em> são concedidas automaticamente. Ao ser proficiente, você soma o bônus de proficiência (+<span id="regra-prof">2</span>) ao modificador do atributo.</span>
+      </div>
+    </div>
+
+    <!-- Grid de perícias em cards por grupo -->
+    <div class="pericias-grupos-wrap" id="pericias-grupos-wrap"></div>
+
+    <!-- Legenda -->
+    <div class="pericias-legenda">
+      <div class="legenda-item"><div class="legenda-dot prof"></div> <span data-i18n="legendProf">Proficiente (classe)</span></div>
+      <div class="legenda-item"><div class="legenda-dot antec"></div> <span data-i18n="legendGranted">Concedida (antecedente)</span></div>
+      <div class="legenda-item"><div class="legenda-dot livre"></div> <span data-i18n="legendNone">Não proficiente</span></div>
+    </div>
+
+    <!-- Percepção passiva em destaque -->
+    <div class="percepcao-passiva-box">
+      <div>
+        <div class="pp-label" data-i18n="ppLabel">Percepção Passiva</div>
+        <div class="pp-sub" data-i18n="ppSub">10 + Sabedoria (Percepção)</div>
+      </div>
+      <div class="pp-valor" id="percepcao-passiva-val">—</div>
+    </div>
+
+  </div>
+
+  <button class="btn-continuar" id="btn-continuar-3" onclick="continuarMagias()" style="margin-top:8px; margin-bottom:0;" data-i18n="btnContinueMagias">✦ &nbsp; Continuar para Habilidades &amp; Poderes &nbsp; ✦</button>
+
+</div>
+
+<!-- ══════════════════════════════════════
+     SEÇÃO 4 — MAGIAS & PODERES (oculta até continuar)
+     ══════════════════════════════════════ -->
+<div id="sec-magias" style="display:none; opacity:0; transform:translateY(18px); transition: opacity 0.55s ease, transform 0.55s ease; max-width:860px; margin:0 auto; padding: 0 16px 48px;">
+
+  <div class="section-sep" style="margin: 24px 0 20px;">✨ &nbsp; Magias, Poderes &amp; Habilidades</div>
+
+  <!-- Conteúdo renderizado dinamicamente -->
+  <div id="magias-conteudo"></div>
+
+  <button class="btn-continuar" id="btn-continuar-4" onclick="continuarEquipamento()" style="margin-top:8px; margin-bottom:0;" data-i18n="btnContinueEquip">✦ &nbsp; Continuar para Equipamento &nbsp; ✦</button>
+
+</div>
+
+<!-- ══════════════════════════════════════
+     SEÇÃO 5 — EQUIPAMENTO (oculta até continuar)
+     ══════════════════════════════════════ -->
+<div id="sec-equipamento" style="display:none; opacity:0; transform:translateY(18px); transition: opacity 0.55s ease, transform 0.55s ease; max-width:860px; margin:0 auto; padding: 0 16px 48px;">
+
+  <div class="section-sep" style="margin: 24px 0 20px;" data-i18n="sep4">Equipamento &amp; Personalidade</div>
+
+  <!-- ── CARD: EQUIPAMENTO DA CLASSE ── -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">
+      🎒 <span data-i18n="eqClassTitle">Sua Mochila de Aventureiro</span>
+      <span id="eq-classe-badge" style="margin-left:auto; font-family:'Cinzel',serif; font-size:9px; letter-spacing:1px; color:var(--text-dim);"></span>
+    </div>
+
+    <!-- Intro contextual -->
+    <div class="eq-intro-box" id="eq-intro-box">
+      <div class="eq-intro-icon">🗺️</div>
+      <div class="eq-intro-texto" data-i18n="eqIntroText">
+        Aqui estão os itens com que seu personagem começa a aventura.
+        Os <strong>garantidos</strong> você já tem. Nas escolhas,
+        <strong>clique na opção que preferir</strong> — não existe certa ou errada!
+      </div>
+    </div>
+
+    <!-- Slots de equipamento gerados por JS -->
+    <div class="eq-slots" id="eq-slots-classe">
+      <div style="font-family:'IM Fell English',serif;font-size:13px;color:var(--text-dim);font-style:italic;padding:16px 0;text-align:center;" data-i18n="eqChooseClass">
+        Escolha sua classe na Seção 1 para ver o equipamento inicial.
+      </div>
+    </div>
+
+    <!-- Banner de pendências -->
+    <div class="eq-pendente-banner oculto" id="eq-pendente-banner" data-i18n="eqPending">
+      ⚠️ &nbsp; Você ainda tem escolhas pendentes acima
+    </div>
+  </div>
+
+  <!-- ── CARD: ITENS DO ANTECEDENTE ── -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">
+      🧳 <span data-i18n="eqAntTitle">Itens do Antecedente</span>
+      <span id="eq-ant-badge" style="margin-left:auto; font-family:'Cinzel',serif; font-size:9px; letter-spacing:1px; color:var(--text-dim);"></span>
+    </div>
+    <div class="eq-intro-box" style="margin-bottom:14px">
+      <div class="eq-intro-icon">🪙</div>
+      <div class="eq-intro-texto" data-i18n="eqAntIntroText">
+        Seu antecedente conta a história de <strong>quem você era</strong> antes de virar aventureiro.
+        Esses itens refletem essa vida passada — eles já são seus, sem precisar escolher nada!
+      </div>
+    </div>
+    <div class="eq-antecedente-lista" id="eq-antecedente-lista">
+      <div style="font-family:'IM Fell English',serif;font-size:13px;color:var(--text-dim);font-style:italic;text-align:center;padding:12px 0;" data-i18n="eqChooseBackground">Escolha um antecedente na Seção 1.</div>
+    </div>
+  </div>
+
+  <!-- ── CARD: RESUMO VISUAL DO INVENTÁRIO ── -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">
+      ✨ <span data-i18n="eqInvTitle">Tudo que você leva na aventura</span>
+    </div>
+    <div style="font-family:'IM Fell English',serif;font-size:12.5px;color:var(--text-dim);font-style:italic;line-height:1.65;margin-bottom:4px;" data-i18n="eqInvSub">
+      Conforme você faz suas escolhas acima, seu inventário completo aparece aqui.
+    </div>
+    <div class="eq-inventario-wrap">
+      <div class="eq-inventario-grid" id="eq-inventario-grid">
+        <!-- gerado por JS -->
+      </div>
+      <div class="eq-inventario-vazio" id="eq-inventario-vazio" data-i18n="eqInvEmpty">
+        Selecione classe e antecedente para montar seu inventário...
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CARD: PERSONALIDADE ── -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">🎭 <span data-i18n="persTitle">Quem é você?</span></div>
+    <div class="eq-intro-box" style="margin-bottom:16px">
+      <div class="eq-intro-icon">💬</div>
+      <div class="eq-intro-texto" data-i18n="persIntroText">
+        Essas perguntas dão <strong>vida e alma</strong> ao seu personagem. Não há resposta certa —
+        pode ser curto, longo, sério ou divertido. As sugestões abaixo são só ponto de partida!
+      </div>
+    </div>
+    <div class="eq-personalidade-grid">
+
+      <div class="eq-pers-card">
+        <div class="eq-pers-header">
+          <span class="eq-pers-icon">😄</span>
+          <span class="eq-pers-titulo" data-i18n="persTrait">Traço de Personalidade</span>
+          <span class="help-icon">?<span class="tooltip" data-i18n="tipTrait">Como você age, fala ou reage? Um hábito, maneirismo ou jeito de ser único.</span></span>
+        </div>
+        <div class="eq-pers-body">
+          <textarea class="eq-textarea" id="eq-traco" placeholder="Ex: Sempre tenho uma piada na ponta da língua, mesmo na hora errada." data-i18n-ph="phTrait"></textarea>
+          <div class="eq-sugestoes" id="eq-sug-traco"></div>
+        </div>
+      </div>
+
+      <div class="eq-pers-card">
+        <div class="eq-pers-header">
+          <span class="eq-pers-icon">⭐</span>
+          <span class="eq-pers-titulo" data-i18n="persIdeal">Ideal</span>
+          <span class="help-icon">?<span class="tooltip" data-i18n="tipIdeal">O que você mais valoriza na vida? O princípio que guia suas decisões.</span></span>
+        </div>
+        <div class="eq-pers-body">
+          <textarea class="eq-textarea" id="eq-ideal" placeholder="Ex: Liberdade — nenhuma corrente, seja ela física ou social, deve existir." data-i18n-ph="phIdeal"></textarea>
+          <div class="eq-sugestoes" id="eq-sug-ideal"></div>
+        </div>
+      </div>
+
+      <div class="eq-pers-card">
+        <div class="eq-pers-header">
+          <span class="eq-pers-icon">🔗</span>
+          <span class="eq-pers-titulo" data-i18n="persBond">Vínculo</span>
+          <span class="help-icon">?<span class="tooltip" data-i18n="tipBond">O que te prende ao mundo? Uma pessoa, lugar ou causa que você protegeria a qualquer custo.</span></span>
+        </div>
+        <div class="eq-pers-body">
+          <textarea class="eq-textarea" id="eq-vinculo" placeholder="Ex: Preciso proteger a aldeia onde cresci, custe o que custar." data-i18n-ph="phBond"></textarea>
+          <div class="eq-sugestoes" id="eq-sug-vinculo"></div>
+        </div>
+      </div>
+
+      <div class="eq-pers-card">
+        <div class="eq-pers-header">
+          <span class="eq-pers-icon">⚠️</span>
+          <span class="eq-pers-titulo" data-i18n="persFlaw">Fraqueza</span>
+          <span class="help-icon">?<span class="tooltip" data-i18n="tipFlaw">Seu ponto fraco. Um medo, vício ou defeito que pode criar problemas para você nas aventuras.</span></span>
+        </div>
+        <div class="eq-pers-body">
+          <textarea class="eq-textarea" id="eq-fraqueza" placeholder="Ex: Não consigo resistir a uma aposta, por maior que seja o risco." data-i18n-ph="phFlaw"></textarea>
+          <div class="eq-sugestoes" id="eq-sug-fraqueza"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="footer" style="text-align:center; font-family:'Cinzel',serif; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--text-dim); margin-top:8px; opacity:0.5;" data-i18n="footer">
+    Forjador de Heróis · D&D 5e · Livro do Jogador &amp; Caldeirão de Tasha
+  </div>
+</div>
+
+<!-- BOTÃO CONTINUAR PARA SALVAR -->
+<div style="max-width:860px; margin:0 auto; padding:0 16px;">
+  <button class="btn-continuar" id="btn-continuar-5" onclick="continuarSalvar()" style="display:none; margin-bottom:0;">✦ &nbsp; <span data-i18n="btnSaveExport">Salvar &amp; Exportar Personagem</span> &nbsp; ✦</button>
+</div>
+
+<!-- SEÇÃO 6 — SALVAR / EXPORTAR -->
+<div class="save-section" id="sec-salvar">
+
+  <!-- Resumo do personagem -->
+  <div class="save-card" style="margin-top:16px">
+    <div class="save-title" data-i18n="saveSummaryTitle">Resumo do Personagem</div>
+    <div class="save-summary" id="save-summary">
+      <!-- preenchido dinamicamente -->
+    </div>
+    <div class="save-divider"></div>
+
+    <!-- Botões de exportar -->
+    <div class="save-title" data-i18n="saveExportTitle">Exportar Ficha</div>
+    <div class="save-grid">
+      <button class="save-btn primary" onclick="exportarPNG()">
+        <span class="save-btn-icon">🖼️</span>
+        <span data-i18n="btnSavePNG">Salvar como imagem (.png)</span>
+      </button>
+      <button class="save-btn primary" onclick="exportarHTML()">
+        <span class="save-btn-icon">📄</span>
+        <span data-i18n="btnSaveHTML">Exportar ficha (.html)</span>
+      </button>
+      <button class="save-btn" onclick="copiarJSON()">
+        <span class="save-btn-icon">📋</span>
+        <span data-i18n="btnCopyJSON">Copiar código de backup</span>
+      </button>
+      <button class="save-btn" onclick="toggleImport()">
+        <span class="save-btn-icon">📥</span>
+        <span data-i18n="btnImport">Carregar personagem salvo</span>
+      </button>
+    </div>
+
+    <!-- Área de importar -->
+    <div class="save-import-area" id="save-import-area">
+      <div class="save-divider"></div>
+      <div class="save-title" data-i18n="saveImportTitle">Carregar Personagem</div>
+      <textarea class="save-import-input" id="save-import-input"
+        placeholder="Cole aqui o código de backup do seu personagem..."></textarea>
+      <div style="display:flex; gap:10px; margin-top:10px;">
+        <button class="save-btn primary" style="flex:1" onclick="importarJSON()">
+          <span class="save-btn-icon">✦</span>
+          <span data-i18n="btnImportConfirm">Carregar personagem</span>
+        </button>
+        <button class="save-btn" style="flex:1" onclick="toggleImport()">
+          <span data-i18n="btnCancel">Cancelar</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="save-status" id="save-status"></div>
+  </div>
+
+  <div class="footer" style="text-align:center; font-family:'Cinzel',serif; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--text-dim); margin-top:8px; opacity:0.5;" data-i18n="footer">
+    Forjador de Heróis · D&D 5e · Livro do Jogador &amp; Caldeirão de Tasha
+  </div>
+</div>
+
+<!-- Botão de tema — Heurística Nielsen #7: Flexibilidade e eficiência de uso -->
+<button class="theme-toggle" id="theme-toggle" onclick="toggleTema()" title="Alternar tema claro/escuro" aria-label="Alternar tema">
+  ☽
+</button>
+
+<!-- Botão de idioma -->
+<button class="lang-toggle" id="lang-toggle" onclick="toggleLang()" title="Switch to English" aria-label="Toggle language">
+  🇺🇸
+</button>
+
+<script src="js/app.js"></script>
+</body>
+</html>
