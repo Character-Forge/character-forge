@@ -262,7 +262,7 @@ Character Forge is an independent educational project and is not affiliated with
 
 Distributed under the MIT License.
 
-See the LICENSE file for more information.
+See the LICENSE file for more informations.
 
 ---
 
